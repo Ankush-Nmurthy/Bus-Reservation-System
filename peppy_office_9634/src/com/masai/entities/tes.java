@@ -2,22 +2,25 @@ package com.masai.entities;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+
+import com.masai.service.BusesService;
+import com.masai.service.BusesServiceImpl;
+import com.masai.utility.IDGeneration;
 
 public class tes {
 
-	public static void printdetails(Scanner sc) {
-		
+	public static Buses printdetails(Scanner sc) {
+		String str = null;
 		System.out.println("enter the details of new bus");
 		
-		System.out.println("enter the departure date");
+		System.out.println("enter the departure date in dd/mm/yy HH:MM:SS formate");
 		String departure = sc.nextLine();
 		
-		System.out.println("enter the arival date");
+		System.out.println("enter the arival date in dd/mm/yy HH:MM:SS formate");
 		String arival = sc.nextLine();
-		
-		System.out.println("enter bus id");
-		int id = sc.nextInt();
 		
 		System.out.println("enter bus Name");
 		String busName = sc.next();
@@ -39,13 +42,22 @@ public class tes {
 		LocalDateTime dateTime = LocalDateTime.parse(arival, formatter);
 
 		
-		Buses b1 = new Buses(id,busName,busType,seats,source,destination, dateTime, dateTime1);
+		Buses newBus = new Buses(IDGeneration.generateID(),busName,busType,seats,source,destination, dateTime, dateTime1);
 		
-		System.out.println(b1);
+		//System.out.println(newBus);
+		return newBus;
 	}
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
-		printdetails(sc);
+		Map<Integer, Buses> buses = new HashMap<>();
+		
+		BusesService busService = new BusesServiceImpl();
+		Buses b1 = printdetails(sc);
+		String ba = busService.addBus(b1, buses);
+		
+		System.out.println(ba);
+		
+		
 	}
 }

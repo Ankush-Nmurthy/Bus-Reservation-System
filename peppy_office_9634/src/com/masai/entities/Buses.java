@@ -33,6 +33,12 @@ public class Buses implements Serializable{
 		super();
 	}
 	
+	public Buses(String busname2, String bustype2, int noOfSeats) {
+		this.busName = busname2;
+		this.busType = bustype2;
+		this.seats = noOfSeats;
+	}
+
 	public int getId() {
 		return id;
 	}
