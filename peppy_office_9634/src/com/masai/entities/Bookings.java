@@ -1,8 +1,9 @@
 package com.masai.entities;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Bookings {
+public class Bookings implements Serializable{
 	private String userName;
 	private String email;
 	private int busNumber;
@@ -114,9 +115,9 @@ public class Bookings {
 
 	@Override
 	public String toString() {
-		return "Bookings [getUserName()=" + getUserName() + ", getEmail()=" + getEmail() + ", getBusNumber()="
-				+ getBusNumber() + ", getBusName()=" + getBusName() + ", getNoofTickets()=" + getNoofTickets()
-				+ ", getPrice()=" + getPrice() + ", getTotal()=" + getTotal() + ", getDt()=" + getDt() + "]";
+		return "Bookings [userName : " + getUserName() + ", Email : " + getEmail() + ", BusNumber : "
+				+ getBusNumber() + ", BusName : " + getBusName() + ", NoofTickets : " + getNoofTickets()
+				+ ", Price : " + getPrice() + ", Total : " + getTotal() + ", Dt : " + getDt() + "]";
 	}
 	
 	
