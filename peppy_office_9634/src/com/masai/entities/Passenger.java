@@ -3,7 +3,7 @@ package com.masai.entities;
 import java.io.Serializable;
 
 public class Passenger implements Serializable{
-	private int WalletBalance;
+	private double WalletBalance;
 	private String name;
 	private String pass;
 	private String address;
@@ -13,7 +13,7 @@ public class Passenger implements Serializable{
 		super();
 	}
 	
-	public Passenger(int balance, String name, String pass, String address, String email) {
+	public Passenger(double balance, String name, String pass, String address, String email) {
 		super();
 		this.WalletBalance = balance;
 		this.name = name;
@@ -22,12 +22,17 @@ public class Passenger implements Serializable{
 		this.email = email;
 	}
 	
-
-	public int getWalletBalance() {
+	public Passenger(String name, String password, String address) {
+		this.name = name;
+		this.pass = password;
+		this.address = address;
+	}
+	
+	public double getWalletBalance() {
 		return WalletBalance;
 	}
-	public void setWalletBalance(int balance) {
-		this.WalletBalance = balance;
+	public void setWalletBalance(double d) {
+		this.WalletBalance = d;
 	}
 	public String getName() {
 		return name;
@@ -56,8 +61,8 @@ public class Passenger implements Serializable{
 	
 	@Override
 	public String toString() {
-		return "Passenger [WalletBalance()=" + getWalletBalance() + ", getName()=" + getName() + ", getPass()=" + getPass()
-				+ ", getAddress()=" + getAddress() + ", getEmail()=" + getEmail() + "]";
+		return "Passenger [WalletBalance : " + getWalletBalance() + ", Name : " + getName() + ", Password : " + getPass()
+				+ ", Address : " + getAddress() + ", Email : " + getEmail() + "]";
 	}
 
 	

@@ -15,28 +15,43 @@ public class Buses implements Serializable{
 	private LocalDateTime departure;
 	private LocalDateTime arival;
 	private int seats;
+	private int RouteId;
+	private double price;
 	
 	public Buses(int id, String busName, String busType, int seats,String source, String destination,LocalDateTime departure,
-			LocalDateTime arival) {
+			LocalDateTime arival,int routeid,double price) {
 		super();
 		this.id = id;
 		this.busName = busName;
+		this.busType = busType;
+		this.seats = seats;
 		this.source = source;
 		this.destination = destination;
-		this.busType = busType;
 		this.departure = departure;
 		this.arival = arival;
-		this.seats = seats;
-	}
-	
-	public Buses() {
-		super();
+		this.RouteId = routeid;
+		this.price = price;
 	}
 	
 	public Buses(String busname2, String bustype2, int noOfSeats) {
 		this.busName = busname2;
 		this.busType = bustype2;
 		this.seats = noOfSeats;
+	}
+	
+	public void setPrice(double price) {
+		this.price = price;
+	}
+	
+	public double getPrice() {
+		return price;
+	}
+	
+	public int getRouteId() {
+		return RouteId;
+	}
+	public void setRouteId(int routeID) {
+		this.RouteId = routeID;
 	}
 
 	public int getId() {
@@ -107,7 +122,7 @@ public class Buses implements Serializable{
 	}
 	@Override
 	public String toString() {
-		return "Buses [BusId : " + getId() + ", BusName : " + getBusName() + ", Source : " + getSource()
+		return "Buses [BusId : " + getId() + ", BusName : " + getBusName() +", ROute Id : "+ getRouteId() +", Source : " + getSource()
 				+ ", Destination : " + getDestination() + ", BusType : " + getBusType() + ", Departure : "
 				+ getDeparture() + ", Arival : " + getArival() + ", NoOFSeats : " + getSeats() + "]";
 	}

@@ -10,9 +10,9 @@ import com.masai.utility.IDGeneration;
 public class BusesServiceImpl implements BusesService{
 
 	@Override
-	public String addBus(Buses bus, Map<Integer, Buses> buses) {
+	public String addBus(Buses bus, Map<Integer, Buses> buses,int routeID) {
 		// TODO Auto-generated method stub
-		buses.put(IDGeneration.generateID(), bus);
+		buses.put(routeID, bus);
 		System.out.println(buses);
 		return "Bus Added Successfully";
 	}
