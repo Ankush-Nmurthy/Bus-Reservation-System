@@ -2,6 +2,7 @@ package com.masai.main;
 
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -13,7 +14,6 @@ import com.masai.entities.Buses;
 import com.masai.entities.Passenger;
 import com.masai.exceptions.BookingException;
 import com.masai.exceptions.BusException;
-import com.masai.exceptions.DuplicateDataException;
 import com.masai.exceptions.InvalidDetailsException;
 import com.masai.service.BookingService;
 import com.masai.service.BookingServiceImpl;
@@ -28,20 +28,6 @@ import com.masai.utility.IDGeneration;
 public class Main {
 	
 	//------------------------------------------- ADMIN FUNCTIONS ------------------------------------------------------>
-	public static void adminLogin(Scanner sc) throws InvalidDetailsException {
-
-		System.out.println("Enter the user name");
-		String userName = sc.next();
-		System.out.println("Enter the password");
-		String password = sc.next();
-
-		if (userName.equals(Admin.username) && password.equals(Admin.password)) {
-			System.out.println("Successfully logged in....!");
-		} else {
-			throw new InvalidDetailsException("Invalid Admin Credentials");
-		}
-	}
-
 	public static String adminAddBus(Scanner sc, Map<Integer, Buses> buses, BusesService busesService) {
 		String str = null;
 		System.out.println("enter the details of new bus");
@@ -83,9 +69,28 @@ public class Main {
 
 		return str;
 	}
+	
+	public static void adminLogin(Scanner sc) throws InvalidDetailsException {
+
+		System.out.println("Enter the user name");
+		String userName = sc.next();
+		System.out.println("Enter the password");
+		String password = sc.next();
+
+		if (userName.equals(Admin.username) && password.equals(Admin.password)) {
+			System.out.println("Successfully logged in....!");
+		} else {
+			throw new InvalidDetailsException("Invalid Admin Credentials");
+		}
+	}
 
 	private static void adminViewAllBuses(Map<Integer, Buses> buses, BusesService busService) throws BusException {
-		busService.ViewAllBusses(buses);
+		if(buses != null && buses.size() > 0) {
+			busService.ViewAllBusses(buses);
+		}
+		else {
+			throw new BusException("Buses List is empty......!");
+		}
 	}
 
 	private static void admnViewallBookingsByBusname(Scanner sc, List<Bookings> bookings, BookingService bookService)
@@ -115,7 +120,7 @@ public class Main {
 		}
 	}
 
-	private static String adminUpdateBusDetails(Scanner sc, Map<Integer, Buses> buses, BusesService busService2)
+	private static String adminUpdateBusDetails(Scanner sc, Map<Integer, Buses> buses,BusesService busService2)
 			throws BusException {
 		String res = null;
 
@@ -133,20 +138,48 @@ public class Main {
 		int NoOfSeats = sc.nextInt();
 
 		Buses b1 = new Buses(Busname, bustype, NoOfSeats);
-
-		res = busService2.updateBus(routeid, b1, buses);
+		
+		
+		String oldName = buses.get(routeid).getBusName();
+		
+		res = busService2.updateBus(routeid,b1,buses);
 
 		return res;
 	}
 
 	private static void adminDeleteBus(Scanner sc, Map<Integer, Buses> busses, BusesService busService)
 			throws BusException {
-		// TODO Auto-generated method stub
+		
 		System.out.println("please enter the id of Bus to be deleted");
 		int id = sc.nextInt();
-		busService.deleteBus(id, busses);
+		
+		if(busses != null && busses.size() > 0) {
+			busService.deleteBus(id, busses);
+		}
+		else {
+			throw new BusException("Bus list is empty...!");
+		}
+		
 	}
 
+    private static void adminViewBookingByDateRange(Scanner sc, List<Bookings> bookings) {
+    	System.out.println("enter Start date in the formate dd/MM/yyyyHH:mm:ss");
+    	String start = sc.next();
+    	
+    	System.out.println("enter end date formate dd/MM/yyyyHH:mm:ss");
+    	String end = sc.next();
+    	
+    	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyyHH:mm:ss");
+    	LocalDateTime startDate = LocalDateTime.parse(start, formatter);
+    	LocalDateTime endDate = LocalDateTime.parse(end, formatter);
+    	
+    	for (Bookings booking : bookings) {
+    	    LocalDateTime bookingDate = booking.getDt();
+    	    if (bookingDate.isAfter(startDate) && bookingDate.isBefore(endDate)) {
+    	        System.out.println(booking);
+    	    }
+    	}
+	}
 	
 	public static void adminFunctionality(Scanner sc, Map<Integer, Buses> buses, Map<String, Passenger> passengers,
 			List<Bookings> bookings) throws InvalidDetailsException, BookingException, BusException {
@@ -156,7 +189,7 @@ public class Main {
 		PassengerService pasenService = new PassengerServiceImpl();
 		int choice = 0;
 		try {
-
+			
 			do {
 				System.out.println("Press 1 -> Add the bus");
 				System.out.println("Press 2 -> view all buses");
@@ -176,10 +209,20 @@ public class Main {
 					System.out.println(added);
 					break;
 				case 2:
-					adminViewAllBuses(buses,busService); //done
+					try{
+						adminViewAllBuses(buses,busService); //done
+					}
+					catch(Exception e) {
+						System.out.println(e.getMessage());
+					}
 					break;
 				case 3:
-					adminDeleteBus(sc,buses,busService); // done
+					try {
+						adminDeleteBus(sc,buses,busService); // done
+					}catch(Exception e) {
+						System.out.println(e.getMessage());
+					}
+					
 					break;
 				case 4:
 					String changedDetails = adminUpdateBusDetails(sc,buses,busService); //done
@@ -195,7 +238,7 @@ public class Main {
 					admnViewallBookingsByBusname(sc,bookings,bookService);
 					break;
 				case 8:
-					//adminViewBookingByDateRange
+					adminViewBookingByDateRange(sc,bookings);
 					break;
 				case 9:
 					System.out.println("successfully loged out from the system");
@@ -204,13 +247,12 @@ public class Main {
 					System.out.println("wrong choice");
 					break;
 				}
-			} while (choice <= 8);
+			} 
+			while (choice <= 8);
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.out.println(e.getMessage());
 		}
 	}
-
 
 //<-------------------------------------------MAIN METHOD----------------------------------------------------------------->
 	public static void main(String[] args) {
@@ -295,6 +337,8 @@ public class Main {
 					System.out.println("Press 4 -> To Edit Passenger Details");
 					System.out.println("Press 5 -> To See all Bookings");
 					System.out.println("Press 6 -> To delete Passenger Account");
+					System.out.println("Press 7 -> To view Account");
+					System.out.println("Press 8 -> To Log Out");
 					
 					choice = sc.nextInt();
 					
@@ -305,9 +349,14 @@ public class Main {
 					case 2:
 						String ticket = passengerBookTicket(sc,email,busses,passengers,bookings,pasenService);
 						System.out.println(ticket);
+						System.out.println("Please note route Id and bus-Id in case if you have to cancel booking");
 						break;
 					case 3:
-						//passengerCancelBooking(sc,busses,bookings,pasenService);
+						try {
+							passengerCancelBooking(sc,email,busses,passengers,bookings,pasenService);
+						}catch(Exception e) {
+							System.out.println(e.getMessage());
+						}
 						break;
 					case 4:
 						passengerEditDetails(sc,passengers,bookings,pasenService);
@@ -316,18 +365,86 @@ public class Main {
 						passengerViewAllBooking(email,bookings);
 						break;
 					case 6:
+						passengerDeletehisAccount(sc,email,passengers);
 						break;
 					case 7:
+						viewAccount(email,passengers);
 						break;
+					case 8:
+						System.out.println("Loged out successfully...!");
 					default:
+						System.out.println("Invalid choice");
 						break;
 					}
 				}
-				while(choice <= 10);
+				while(choice <= 7);
 			} catch (Exception e) {
-				// TODO: handle exception
+				System.out.println(e.getMessage());
 			}
 		}
+		
+	}
+
+	private static void passengerDeletehisAccount(Scanner sc, String email, Map<String, Passenger> passengers) {
+		System.out.println("press 1 -> To conform Delete your account permanently");
+		int choice = sc.nextInt();
+		
+		if(choice == 1) {
+			passengers.remove(email);
+		}
+	}
+
+	private static void viewAccount(String email, Map<String, Passenger> passengers) {
+		// TODO Auto-generated method stub
+		System.out.println(passengers.get(email));
+	}
+
+	private static void passengerCancelBooking(Scanner sc,String email, Map<Integer, Buses> busses, Map<String, Passenger> passengers,List<Bookings> bookings,
+			PassengerService pasenService) throws BusException, InvalidDetailsException {
+		
+		System.out.println("Enter the route id to delete your booking");
+		int toDeletebooking = sc.nextInt();
+		
+		System.out.println("Enter Bus-Id which you wish to cancel booking");
+		int EnteredBusName = sc.nextInt();
+		
+		int seats = 0;
+		double price = 0;
+		LocalDateTime BookingDate = null;
+		
+		for(Bookings b : bookings) {
+//			System.out.println("hey");
+			System.out.println(b);
+			if(b.getBusNumber() == EnteredBusName) {
+				BookingDate = b.getDt();
+				seats += b.getNoofTickets();
+				price += b.getPrice();
+				//System.out.println("hey");
+				bookings.remove(b);
+			}
+		}
+		
+		Buses b1 = busses.get(toDeletebooking);
+		b1.setSeats(b1.getSeats() + seats);
+		
+		busses.put(toDeletebooking,b1);
+		
+		LocalDateTime departureDate = b1.getDeparture();
+		
+		Duration dur = Duration.between(BookingDate, departureDate);
+		long hours = dur.toHours();
+		
+		System.out.println(hours);
+		
+//		2.  You may enhance the cancel ticket policy, if users cancel a ticket 24 hours before 
+//		departure, then a full refund, if it is 12 hours before departure then a 50% refund, 
+//		and if 6 hours before departure then a 20% refund otherwise no refund.
+//		
+		
+		Passenger p = passengers.get(email);
+		p.setWalletBalance(p.getWalletBalance() + price);
+		
+		System.out.println("Booking canceling successfull, Amount will be added to your account");
 		
 	}
 
