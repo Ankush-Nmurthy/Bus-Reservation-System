@@ -22,15 +22,12 @@ public class BookingServiceImpl implements BookingService{
 	}
 
 	@Override
-	public void ViewBoookingByPassengerName(String email, List<Bookings> bookings) throws BookingException {
+	public void ViewBoookingByPassengerName(String username, List<Bookings> bookings) throws BookingException {
 		
 		if(bookings != null && bookings.size() > 0) {
 			for(Bookings b : bookings) {
-				if(b.getUserName().equals(email)) {
+				if(b.getUserName().equals(username)) {
 					System.out.println(b);
-				}
-				else {
-					throw new BookingException("Passenger Not Found");
 				}
 			}
 		}
@@ -38,12 +35,6 @@ public class BookingServiceImpl implements BookingService{
 			throw new BookingException("Empty booking list(no bookings found)");
 		}
 		
-	}
-
-	@Override
-	public List<Bookings> ViewallBookingsDateWise() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -59,6 +50,11 @@ public class BookingServiceImpl implements BookingService{
 		else {
 			throw new BookingException("Bus Name enterd is not found..!");
 		}
+	}
+
+	@Override
+	public void ViewallBookingsDateWise() {
+		
 	}
 
 //	@Override

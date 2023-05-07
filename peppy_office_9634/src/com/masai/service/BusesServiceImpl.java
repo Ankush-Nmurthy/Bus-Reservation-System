@@ -1,8 +1,10 @@
 package com.masai.service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.masai.entities.Bookings;
 import com.masai.entities.Buses;
 import com.masai.exceptions.BusException;
 import com.masai.utility.IDGeneration;
@@ -48,7 +50,7 @@ public class BusesServiceImpl implements BusesService{
 	}
 
 	@Override
-	public String updateBus(int id, Buses bus, Map<Integer, Buses> buses) throws BusException {
+	public String updateBus(int id,Buses bus, Map<Integer, Buses> buses) throws BusException {
 		// TODO Auto-generated method stub
 		if(buses != null && buses.size() > 0) {
 			if(buses.containsKey(id)) {

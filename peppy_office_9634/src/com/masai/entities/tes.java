@@ -5,8 +5,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Map;
 
 public class tes {
 
@@ -56,15 +60,45 @@ public class tes {
 //		
 //		System.out.println(ba);
 		
+//		
+//		File f = new File("Bookings.ser");
+//		System.out.println(f.exists());
+//		ObjectInputStream ois;
+//		try {
+//			ois = new ObjectInputStream(new FileInputStream(f));
+//			List<Bookings> bookingsFile = (List<Bookings>) ois.readObject();
+//			for(Bookings b: bookingsFile) {
+//				System.out.println(b);
+//			}
+//			
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			System.out.println(e.getMessage());
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			System.out.println(e.getMessage());
+//		}
+		
+		Map<Integer,Buses> buses = new HashMap<>();
+		
+		List<Bookings> b = new LinkedList<>();
 		
 		File f = new File("Bookings.ser");
 		System.out.println(f.exists());
 		ObjectInputStream ois;
 		try {
 			ois = new ObjectInputStream(new FileInputStream(f));
-			List<Bookings> bookingsFile = (List<Bookings>) ois.readObject();
-			for(Bookings b: bookingsFile) {
-				System.out.println(b);
+			b = (List<Bookings>) ois.readObject();
+//			for(Map.Entry<Integer, Buses> bus : buses.entrySet()) {
+//				System.out.println(bus.getValue().getBusName());
+//			}
+			
+			for(Bookings b1 : b) {
+				System.out.println(b1.getDt());
+				Duration dur = Duration.between(b1.getDt(),LocalDateTime.now());
+				long dur1 = dur.toHours();
+				System.out.println(dur1);
+//				System.out.println(dur.get);
 			}
 			
 		} catch (FileNotFoundException e) {
@@ -74,6 +108,9 @@ public class tes {
 			// TODO Auto-generated catch block
 			System.out.println(e.getMessage());
 		}
+		
+		
+		
 		
 	}
 }
