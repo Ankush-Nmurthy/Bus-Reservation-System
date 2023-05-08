@@ -27,7 +27,7 @@ import com.masai.utility.IDGeneration;
 
 public class Main {
 	
-	//------------------------------------------- ADMIN FUNCTIONS ------------------------------------------------------>
+	//<------------------------------------------- ADMIN FUNCTIONS ------------------------------------------------------>
 	public static String adminAddBus(Scanner sc, Map<Integer, Buses> buses, BusesService busesService) {
 		String str = null;
 		System.out.println("enter the details of new bus");
@@ -311,7 +311,7 @@ public class Main {
 		}
 	}
 	
-	//-------------------------------------------- PASSENGER FUNCTIONS ------------------------------------------->
+	//<-------------------------------------------- PASSENGER FUNCTIONS ------------------------------------------->
 	public static void passengersFunctionality(Scanner sc, Map<Integer, Buses> busses,
 		Map<String, Passenger> passengers, List<Bookings> bookings) throws InvalidDetailsException, BookingException, InvalidDetailsException{
 		BookingService bookService = new BookingServiceImpl();
@@ -338,7 +338,8 @@ public class Main {
 					System.out.println("Press 5 -> To See all Bookings");
 					System.out.println("Press 6 -> To delete Passenger Account");
 					System.out.println("Press 7 -> To view Account");
-					System.out.println("Press 8 -> To Log Out");
+					System.out.println("Press 8 -> To Top Up Wallet");
+					System.out.println("Press 9 -> TO Log Out.....!");
 					
 					choice = sc.nextInt();
 					
@@ -371,17 +372,35 @@ public class Main {
 						viewAccount(email,passengers);
 						break;
 					case 8:
+						topUpWallet(sc,passengers);
+						System.out.println("Wallet top up successfull......!");
+					case 9:
 						System.out.println("Loged out successfully...!");
+						break;
 					default:
 						System.out.println("Invalid choice");
 						break;
 					}
 				}
-				while(choice <= 7);
+				while(choice < 9);
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
 		}
+		
+	}
+
+	private static void topUpWallet(Scanner sc, Map<String, Passenger> passengers) {
+		System.out.println("enter your email address");
+		String email = sc.next();
+		
+		System.out.println("enter the amount you wish to add to your wallet");
+		double amount = sc.nextDouble();
+		
+		Passenger p = passengers.get(email);
+		p.setWalletBalance(p.getWalletBalance() + amount);
+		
+		
 		
 	}
 
@@ -401,48 +420,56 @@ public class Main {
 
 	private static void passengerCancelBooking(Scanner sc,String email, Map<Integer, Buses> busses, Map<String, Passenger> passengers,List<Bookings> bookings,
 			PassengerService pasenService) throws BusException, InvalidDetailsException {
-		
 		System.out.println("Enter the route id to delete your booking");
 		int toDeletebooking = sc.nextInt();
 		
-		System.out.println("Enter Bus-Id which you wish to cancel booking");
-		int EnteredBusName = sc.nextInt();
+		System.out.println("Enter BusName which you wish to cancel booking");
+		String EnteredBusnumber = sc.next();
 		
 		int seats = 0;
 		double price = 0;
-		LocalDateTime BookingDate = null;
+		LocalDateTime cancelingtime = LocalDateTime.now();
 		
-		for(Bookings b : bookings) {
-//			System.out.println("hey");
-			System.out.println(b);
-			if(b.getBusNumber() == EnteredBusName) {
-				BookingDate = b.getDt();
-				seats += b.getNoofTickets();
-				price += b.getPrice();
-				//System.out.println("hey");
-				bookings.remove(b);
+		System.out.println(bookings.size());
+		
+		for(int i = 0 ; i < bookings.size() ; i++) {
+			if(bookings.get(i).getBusName().equals(EnteredBusnumber) && bookings.get(i).getEmail().equals(email)) {
+				seats += bookings.get(i).getNoofTickets();
+				price += bookings.get(i).getTotal();
+				bookings.remove(bookings.get(i));
 			}
 		}
 		
-		Buses b1 = busses.get(toDeletebooking);
-		b1.setSeats(b1.getSeats() + seats);
 		
+		Buses b1 = busses.get(toDeletebooking);
+		System.out.println(b1);
+		b1.setSeats(b1.getSeats() + seats);
 		busses.put(toDeletebooking,b1);
+		
+		System.out.println(busses.get(toDeletebooking));
 		
 		LocalDateTime departureDate = b1.getDeparture();
 		
-		Duration dur = Duration.between(BookingDate, departureDate);
+		Duration dur = Duration.between(cancelingtime, departureDate);
 		long hours = dur.toHours();
 		
-		System.out.println(hours);
-		
-//		2.  You may enhance the cancel ticket policy, if users cancel a ticket 24 hours before 
-//		departure, then a full refund, if it is 12 hours before departure then a 50% refund, 
-//		and if 6 hours before departure then a 20% refund otherwise no refund.
-//		
-		
 		Passenger p = passengers.get(email);
-		p.setWalletBalance(p.getWalletBalance() + price);
+		System.out.println(p);
+		if(hours >= 24) {
+			p.setWalletBalance(p.getWalletBalance() + price);
+			System.out.println("You are elegible for full repayment....!");
+		}
+		else if(hours <= 24 && hours >= 12) {
+			p.setWalletBalance(p.getWalletBalance() + price*0.5);
+			System.out.println("You are elegible for 50% repayment....!");
+		}
+		else if(hours <= 12 && hours >= 6) {
+			p.setWalletBalance(p.getWalletBalance() + price*0.2);
+			System.out.println("You are elegible for 20% repayment....!");
+		}
+		else {
+			System.out.println("you are not elegible for repayment");
+		}
 		
 		System.out.println("Booking canceling successfull, Amount will be added to your account");
 		
