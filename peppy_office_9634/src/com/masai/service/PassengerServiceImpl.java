@@ -48,7 +48,6 @@ public class PassengerServiceImpl implements PassengerService{
 		pass.setName(p.getName());
 		pass.setAddress(p.getAddress());
 		pass.setPass(p.getPass());
-		
 		pasenger.put(email, pass);
 		
 		
